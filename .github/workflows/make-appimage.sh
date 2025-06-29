@@ -82,7 +82,7 @@ sed -i 's|/usr/share/caja|././/share/caja|g' ./shared/bin/caja*
 LD_LINUX_WRAPPER='#!/bin/sh
 CURRENTDIR="$(cd "${0%/*}" && echo "$PWD")"
 exec "$CURRENTDIR"/ld-linux.so \
-	--library-path "$CURRENTDIR"/../shared/lib \
+	--library-path "$CURRENTDIR"/../shared/lib --argv0 "$0" \
 	"$CURRENTDIR"/../shared/bin/"${0##*/}" "$@"'
 
 for bin in ./shared/bin/*; do

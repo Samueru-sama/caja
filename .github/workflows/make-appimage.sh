@@ -75,9 +75,8 @@ find ./shared -type f -exec strip -s -R .comment --strip-unneeded {} \;
 # Caja is hardcoded to look in /usr/share/caja
 # It doesn't check XDG_DATA_DIRS 🥲
 # So we will fix it with a hack™
-sed -i 's|/usr/share/caja|././/share/caja|g' ./shared/bin/caja*
-
-
+sed -i 's|/usr/share/caja|/tmp/.caja/caja|g' ./shared/bin/caja*
+          
 # Add dynamic linker wrapper for each binary we bundle
 LD_LINUX_WRAPPER='#!/bin/sh
 CURRENTDIR="$(cd "${0%/*}" && echo "$PWD")"
@@ -98,8 +97,8 @@ CURRENTDIR="$(cd "${0%/*}" && echo "$PWD")"
 BIN="${ARGV0#./}"
 unset ARGV0
 
-# change working dir since we did binary patching
-cd "$CURRENTDIR"
+# make symlink to our share dir since the caja binaries will look in /tmp/.caja
+ln -sfn "$CURRENTDIR"/share /tmp/.caja
 
 export PATH="$CURRENTDIR/bin:$PATH"
 export GTK_PATH="$CURRENTDIR"/shared/lib/gtk-3.0
@@ -138,9 +137,10 @@ objcopy --update-section=.upd_info=data.upd_info \
 cat ./AppDir.squashfs >> ./runtime
 printf 'AI\x02' | dd of=./runtime bs=1 count=3 seek=8 conv=notrunc
 mv -v ./runtime ./Caja-"$VERSION"-anylinux-"$ARCH".AppImage
-zsyncmake ./*.AppImage -u ./*.AppImage
 
 echo "Generating zsync file..."
+zsyncmake ./*.AppImage -u ./*.AppImage
+
 mkdir ./dist
 mv -v ./*.AppImage* ./dist
 

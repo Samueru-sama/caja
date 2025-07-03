@@ -110,14 +110,14 @@ export GSETTINGS_SCHEMA_DIR="$CURRENTDIR"/share/glib-2.0/schemas
 export GDK_PIXBUF_MODULEDIR="$CURRENTDIR"/shared/lib/gdk-pixbuf-2.0
 export GDK_PIXBUF_MODULE_FILE="$GDK_PIXBUF_MODULEDIR"/2.10.0/loaders.cache
 
-if [ -f ./bin/"$BIN" ]; then
-	exec ./bin/"$BIN" "$@"
-elif [ -f ./bin/"$1" ]; then
+if [ -f "$CURRENTDIR"/bin/"$BIN" ]; then
+	exec "$CURRENTDIR"/bin/"$BIN" "$@"
+elif [ -f "$CURRENTDIR"/bin/"$1" ]; then
 	BIN="$1"
 	shift
-	exec ./bin/"$BIN" "$@"
+	exec "$CURRENTDIR"/bin/"$BIN" "$@"
 else
-	exec ./bin/caja "$@"
+	exec "$CURRENTDIR"/bin/caja "$@"
 fi' > ./AppRun
 
 chmod +x ./AppRun ./bin/*
